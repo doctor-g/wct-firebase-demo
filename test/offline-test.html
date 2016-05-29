@@ -1,0 +1,83 @@
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title></title>
+
+  <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../bower_components/web-component-tester/browser.js"></script>
+    <script src="../bower_components/firebase/firebase.js"></script>
+
+</head>
+
+<body>
+
+  <script>
+    suite('firebase offline tests', function() {
+      var app;
+      var db;
+
+      suiteSetup(function() {
+        app = firebase.initializeApp({
+          apiKey: 'fake',
+          authDomain: 'fake',
+          databaseURL: 'https://fakeserver.firebaseio.com',
+          storageBucket: 'fake'
+        });
+        db = app.database();
+        db.goOffline();
+      });
+
+      suiteTeardown(function() {
+        app.delete();
+      });
+
+      teardown(function() {
+        db.ref('/').remove();
+      });
+
+      test('offline firebase is ok', function() {
+        assert.isOk(db);
+      });
+
+      test('.info/connected is false', function(done) {
+        db.ref('.info/connected').once('value', function(snapshot) {
+          assert.isFalse(snapshot.val());
+          done();
+        });
+      });
+
+      test('remove(\'/\') removes all data', function(done) {
+        db.ref('test').push('football');
+        db.ref('/').remove();
+        db.ref('test').once('value', function(snapshot) {
+          expect(snapshot.val()).is.null;
+          done();
+        });
+      });
+
+      test('offline set', function(done) {
+        var homestarRef = db.ref('users/homestar');
+        var record = "homestar@homestarrunner.com";
+        homestarRef.set(record);
+        homestarRef.once('value', function(snapshot) {
+          expect(snapshot.val()).to.deep.equal(
+            "homestar@homestarrunner.com");
+          done();
+        });
+      });
+
+      test('offline push', function(done) {
+        var storiesRef = db.ref('stories');
+        storiesRef.push('anything');
+        storiesRef.once('value', function(snapshot) {
+          expect(snapshot.val()).not.to.be.empty;
+          done();
+        });
+      });
+    });
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,7 @@
+{
+  "name": "wct-firebase-demo",
+  "short_name": "wct-firebase-demo",
+  "description": "Demonstrate wct and firebase integration with automated tests",
+  "start_url": "/",
+  "display": "standalone"
+}

@@ -1,0 +1,126 @@
+<!doctype html>
+
+<html>
+
+<head>
+  <title>wct-firebase-demo-app test</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../web-component-tester/browser.js"></script>
+  <script src="../../bower_components/firebase/firebase.js"></script>
+
+  <link rel="import" href="../../src/wct-firebase-demo-app/wct-firebase-demo-app.html">
+</head>
+
+<body>
+
+  <test-fixture id="basic">
+    <template>
+      <wct-firebase-demo-app></wct-firebase-demo-app>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('wct-firebase-demo-app', function() {
+      var app;
+      var db;
+      var element;
+
+      suiteSetup(function() {
+        app = firebase.initializeApp({
+          apiKey: 'fake',
+          authDomain: 'fake',
+          databaseURL: 'https://fakeserver.firebaseio.com',
+          storageBucket: 'fake'
+        }, "wct-fire-base-demo");
+        db = app.database();
+        db.goOffline();
+      });
+
+      suiteTeardown(function() {
+        app.delete();
+      });
+
+      setup(function() {
+        element = fixture('basic');
+      });
+
+      teardown(function() {
+        db.ref('/').remove();
+      });
+
+      test('instantiating the element works', function() {
+        assert.equal(element.is, 'wct-firebase-demo-app');
+      });
+
+      // Futures maybe don't work right offline, so I have to use callbacks?
+
+      test('offline set without using web component', function(done) {
+        let ref = db.ref('foo');
+        ref.set('bar');
+        ref.once('value', function(snapshot) {
+          assert.equal(snapshot.val(), 'bar');
+          done();
+        });
+
+      });
+
+      test('offline set string from web component attribute', function(done) {
+        element.database = db;
+        element.database.ref('foo').set('bar');
+        element.database.ref('foo').once('value', function(snapshot) {
+          assert.equal(snapshot.val(), 'bar');
+          done();
+        });
+      });
+
+      test('offline push string from web component attribute', function(done) {
+        element.database = db;
+        element.database.ref('foo').push('bar');
+        element.database.ref('foo').once('value', function(snapshot) {
+          expect(snapshot.val()).not.to.be.empty;
+          done();
+        });
+      });
+
+      test('offline set string from web component function', function(done) {
+        element.database = db;
+        element.setIt('foo', 'bar');
+        element.database.ref('foo').once('value', function(snapshot) {
+          assert.equal(snapshot.val(), 'bar');
+          done();
+        });
+      });
+
+      test('offline push string from web component function', function(done) {
+        element.database = db;
+        let resultRef = element.pushIt('foo', 'bar');
+        element.database.ref('foo').once('value', function(snapshot) {
+          assert.equal(snapshot.val()[resultRef.key], 'bar');
+          done();
+        });
+      });
+
+      test('offline push object from web component function', function(done) {
+        element.database = db;
+        let expected = {
+          max: 4,
+          next: 1,
+          0: {
+            by: "someone",
+            timestamp: Date.now(),
+            text: 'foo'
+          }
+        };
+        let resultRef = element.pushIt('foo', expected);
+        element.database.ref('foo').once('value', function(snapshot) {
+          assert.deepEqual(snapshot.val()[resultRef.key], expected);
+          done();
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>

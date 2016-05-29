@@ -1,0 +1,38 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="wct-firebase-demo-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]</h2>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'wct-firebase-demo-app',
+
+      properties: {
+        prop1: {
+          type: String,
+          value: 'wct-firebase-demo-app',
+        },
+        database: {
+          type: Object
+        }
+      },
+
+      setIt: function(at, value) {
+        this.database.ref(at).set(value);
+      },
+
+      pushIt: function(at, value) {
+        return this.database.ref(at).push(value);
+      },
+
+    });
+  </script>
+</dom-module>
