@@ -14,8 +14,8 @@
       properties: {
         database: Object,
       },
-      pushData: function() {
-        this.database.ref('foo').push('bar');
+      pushData: function(at, data) {
+        this.database.ref(at).push(data);
       }
     });
   </script>
