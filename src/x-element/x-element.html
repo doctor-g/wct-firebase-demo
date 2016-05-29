@@ -1,0 +1,27 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<dom-module id="x-element">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'x-element',
+      properties: {
+        database: Object
+      },
+      pushData() {
+        let data = {
+          x: 0,
+          y: 1
+        };
+        database.ref('foo').push(data);
+      }
+
+    });
+  </script>
+</dom-module>

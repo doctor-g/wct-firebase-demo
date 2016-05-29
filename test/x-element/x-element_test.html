@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>x-element test</title>
+
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="bower_components/web-component-tester/browser.js"></script>
+
+    <!-- Step 1: import the element to test -->
+    <link rel="import" href="../../src/x-element/x-element.html">
+
+  </head>
+  <body>
+
+  <test-fixture id="basic">
+    <template>
+      <x-element></x-element>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('x-element tests', function() {
+      var app;
+      var db;
+      var element;
+
+      suiteSetup(function() {
+        app = firebase.initializeApp({
+          apiKey: 'fake',
+          authDomain: 'fake',
+          databaseURL: 'https://fakeserver.firebaseio.com',
+          storageBucket: 'fake'
+        }, "x-element");
+        db = app.database();
+        db.goOffline();
+      });
+
+      suiteTeardown(function() {
+        app.delete();
+      });
+
+      setup(function() {
+        element = fixture('basic');
+      });
+
+      teardown(function() {
+        db.ref('/').remove();
+      });
+
+      test('pushData has an effect', function(done) {
+        element.database = db;
+        element.pushData();
+        db.ref('foo').once('value', function(snapshot) {
+          expect(snapshot.val()).to.be.empty;
+          done();
+        });
+      });
+
+    });
+  </script>
+
+  </body>
+</html>
