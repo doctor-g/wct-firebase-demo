@@ -12,16 +12,11 @@
     Polymer({
       is: 'x-element',
       properties: {
-        database: Object
+        database: Object,
       },
-      pushData() {
-        let data = {
-          x: 0,
-          y: 1
-        };
-        database.ref('foo').push(data);
+      pushData: function() {
+        this.database.ref('foo').push('bar');
       }
-
     });
   </script>
 </dom-module>

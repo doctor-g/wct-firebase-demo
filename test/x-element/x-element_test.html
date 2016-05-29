@@ -3,8 +3,9 @@
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
     <title>x-element test</title>
 
-    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="bower_components/web-component-tester/browser.js"></script>
+    <script src="../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../bower_components/web-component-tester/browser.js"></script>
+    <script src="../../bower_components/firebase/firebase.js"></script>
 
     <!-- Step 1: import the element to test -->
     <link rel="import" href="../../src/x-element/x-element.html">
@@ -51,7 +52,7 @@
         element.database = db;
         element.pushData();
         db.ref('foo').once('value', function(snapshot) {
-          expect(snapshot.val()).to.be.empty;
+          expect(snapshot.val()).not.to.be.empty;
           done();
         });
       });
