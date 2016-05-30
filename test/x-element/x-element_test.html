@@ -52,11 +52,10 @@
         element.database = db;
         element.pushData('foo', 'xyz');
         db.ref('foo').once('value', function(snapshot) {
-          expect(snapshot.val()).not.to.be.empty;
+          expect(snapshot.val(), 'There were no data pushed.').not.to.be.null;
           done();
         });
       });
-
     });
   </script>
 
